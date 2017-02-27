@@ -2,6 +2,7 @@ package com.huotu.huotao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.cookie.ClientCookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.ini4j.Ini;
@@ -34,6 +35,8 @@ public class WeixinInstanceV2Test {
                 BasicClientCookie cookie =  new BasicClientCookie(cookiePre.get("Name",null),cookiePre.get("Value",null));
                 cookie.setPath(cookiePre.get("Path",null));
                 cookie.setDomain(cookiePre.get("Domain",null));
+                cookie.setAttribute(ClientCookie.PATH_ATTR,cookie.getPath());
+                cookie.setAttribute(ClientCookie.DOMAIN_ATTR,cookie.getDomain());
                 basicCookieStore.addCookie(cookie);
             }
         }
@@ -45,7 +48,7 @@ public class WeixinInstanceV2Test {
                 ,basicCookieStore
         );
 
-        instace.sendImageMessage("Guo Childe",new ClassPathResource("/test.png"));
+        instace.sendImageMessage("Guo Childe", "test.png", new ClassPathResource("/test.png"));
     }
 
 }
