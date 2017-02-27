@@ -2,6 +2,8 @@ package com.huotu.huotao;
 
 import com.huotu.huotao.exception.LoginRequiredException;
 import com.huotu.huotao.http.IOFunction;
+import com.huotu.huotao.http.model.BaseRequest;
+import com.huotu.huotao.http.model.MediaMessage;
 import com.huotu.huotao.http.model.RequestModel;
 import com.huotu.huotao.http.model.UploadMediaRequestModel;
 import lombok.Getter;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
@@ -143,8 +146,27 @@ public class WeixinInstanceV2 {
                 .addBinaryBody("filename", StreamUtils.copyToByteArray(resource.getInputStream()), ContentType.create(mineType),imageName)
                 .build()
         );
-        String code = client.execute(post, new BasicResponseHandler());
-        System.out.println(code);
+        JsonNode result = http(post,this::toJson);
+        String mediaId  =  result.get("MediaId").asText();
+
+        // 发送消息
+        httpPostBin("webwxsendmsgimg?fun=async&f=json&lang=zh_CN&pass_ticket=" + ticket, new Consumer<HttpPost>() {
+            @Override
+            @SneakyThrows(IOException.class)
+            public void accept(HttpPost httpPost) {
+                HashMap<String,Object> toPost = new HashMap<>();
+                toPost.put("BaseRequest", new BaseRequest(WeixinInstanceV2.this));
+                toPost.put("Scene",0);
+                toPost.put("Msg", new MediaMessage(from,to,mediaId));
+
+                httpPost.setEntity(
+                        EntityBuilder.create()
+                                .setBinary(mapper.writeValueAsBytes(toPost))
+                                .build()
+                );
+            }
+        },this::toJson);
+
     }
 
     private String myUserName() throws IOException {

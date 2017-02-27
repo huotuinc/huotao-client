@@ -49,6 +49,9 @@ public class WeixinInstanceV2Test {
         );
 
         instace.sendImageMessage("Guo Childe", "test.png", new ClassPathResource("/test.png"));
+        instace.sendImageMessage("Guo Childe", "test.png", new ClassPathResource("/test.png"));
+        instace.sendImageMessage("Guo Childe", "test.png", new ClassPathResource("/test.png"));
+        instace.sendImageMessage("Guo Childe", "test.png", new ClassPathResource("/test.png"));
     }
 
 }
